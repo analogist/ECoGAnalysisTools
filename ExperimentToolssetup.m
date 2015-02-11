@@ -7,5 +7,6 @@ function [ ] = ExperimentToolssetup( appdir )
     addpath([appdir '/ExperimentTools/XCovAnalysis']);
     addpath([appdir '/ExperimentTools/ECoG']);
     addpath([appdir '/ExperimentTools/Force']);
+    addpath([appdir '/ExperimentTools/Glove']);
 end
 
