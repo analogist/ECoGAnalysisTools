@@ -9,7 +9,7 @@ glovedata{1} = 2;
 
 glovechannels = 22;
 
-[sig, states, params] = load_bcidat(filename);
+[~, states, params] = load_bcidat(filename);
 
 
 %%determine handedness

@@ -2,8 +2,8 @@ function [ gloveCalib ] = runGloveCalib( glovedata_in )
 %function [ gloveCalib ] = runGloveCalib( glovedata_in )
 %   Detailed explanation goes here
 
-right_calib = 'calibration - JamesRight.mat';
-left_calib = 'calibration - MeenaLeft.mat';
+right_calib = 'calibration_JamesRight.mat';
+left_calib = 'calibration_MeenaLeft.mat';
 
 
 glovedata = glovedata_in{2};
