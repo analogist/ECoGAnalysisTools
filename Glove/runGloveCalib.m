@@ -1,20 +1,17 @@
 function [ gloveCalib ] = runGloveCalib( glovedata_in )
-%function [ gloveCalib ] = runGloveCalib( glovedata_in )
-%   Detailed explanation goes here
+%GLOVECALIB Converts 22 channel raw glove space to Adroit space
+%   Needs minmax_despike
 
 right_calib = 'calibration_JamesRight.mat';
 left_calib = 'calibration_MeenaLeft.mat';
 
-
-glovedata = glovedata_in{2};
-handedness = glovedata_in{1};
-
-
 % load('../AdroitDataGlove/calibration - MeenaLeft.mat');
-if(handedness == 1)
+if(glovedata_in.handedness == 1)
     load(right_calib);
-else
+elseif(glovedata_in.handedness == 2)
     load(left_calib);
+else
+    error('Handedness invalid during calibration')
 end
 % addpath('bci_depends/data_bci/')
 % addpath('../Adroit_sim(0.72)')
@@ -23,13 +20,13 @@ end
 mj('load', which('Adroit_Hand.xml'));
 m = mj('getmodel');
 
-[minvec, maxvec] = despike(glovedata);
+[minvec, maxvec] = minmax_despike(glovedata_in.signals);
 
-minmat = repmat2sizeof(minvec, glovedata);
-maxmat = repmat2sizeof(maxvec, glovedata);
+minmat = repmat2sizeof(minvec, glovedata_in.signals);
+maxmat = repmat2sizeof(maxvec, glovedata_in.signals);
 
 
-gloveNRaw  = (glovedata - minmat) ./ (maxmat - minmat);
+gloveNRaw  = (glovedata_in.signals - minmat) ./ (maxmat - minmat);
 
 gloveNRaw(gloveNRaw == -Inf) = 0;
 gloveNRaw(gloveNRaw == Inf) = 0;
