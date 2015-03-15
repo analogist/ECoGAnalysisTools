@@ -7,5 +7,10 @@ function [ calibratedglove, stimdata ] = loadCalibratedGlove( subjid )
     calibratedglove = runGloveCalib(glovedata);
     disp('Glove: Zeroing wrist data');
     calibratedglove(1:2, :) = 0;
+    if(any(any(isnan(calibratedglove))))
+        warning('Dropped channel detected. Invalid calibration!')
+        warning('Calibrated deactivated, passing through raw.')
+        calibratedglove=glovedata.signals;
+    end
 end
 

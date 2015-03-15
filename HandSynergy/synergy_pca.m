@@ -11,7 +11,9 @@ function [ synergies, origpos ] = synergy_pca( calibglovedata, dims )
     fprintf('Glove: Decomposing %d synergies\n', dims)
     
     if(size(calibglovedata, 1) ~= 24 || size(calibglovedata, 2) <= 24)
-        error('Glovedata should be in the format of [24 x time]');
+        warning('Glovedata not [24 x time]! Looking for uncalibrated glove');
+    elseif(size(calibglovedata, 1) ~= 22 || size(calibglovedata, 2) <= 22)
+        error('Glovedata should be [22 x time] or [24 x time]!');
     end
     
     synergies = pca((calibglovedata)');
