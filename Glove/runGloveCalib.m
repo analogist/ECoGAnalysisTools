@@ -2,7 +2,7 @@ function [ gloveCalib ] = runGloveCalib( glovedata_in )
 %GLOVECALIB Converts 22 channel raw glove space to Adroit space
 %   Needs minmax_despike
 
-right_calib = 'calibration_JamesRight.mat';
+right_calib = 'calibration_ecb43eRight.mat';
 left_calib = 'calibration_MeenaLeft.mat';
 
 % load('../AdroitDataGlove/calibration - MeenaLeft.mat');

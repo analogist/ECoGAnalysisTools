@@ -3,6 +3,7 @@ function [ subj_signal, subj_state ] = loadECoG( subjid )
 %   Detailed explanation goes here
 disp('ECoG: Loading ECoG')
 [subj_signal, subj_state] = load_bcidat(subjid);
+subj_signal = subj_signal(:, 1:64);
 montageFilepath = strrep(subjid, '.dat', '_montage.mat');
 
 if (exist(montageFilepath, 'file'))

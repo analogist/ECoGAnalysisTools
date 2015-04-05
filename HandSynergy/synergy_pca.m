@@ -12,7 +12,7 @@ function [ synergies, origpos ] = synergy_pca( calibglovedata, dims )
     
     if(size(calibglovedata, 1) ~= 24 || size(calibglovedata, 2) <= 24)
         warning('Glovedata not [24 x time]! Looking for uncalibrated glove');
-    elseif(size(calibglovedata, 1) ~= 22 || size(calibglovedata, 2) <= 22)
+    elseif((size(calibglovedata, 1) ~= 24 && size(calibglovedata, 1) ~= 22) || size(calibglovedata, 2) <= 22)
         error('Glovedata should be [22 x time] or [24 x time]!');
     end
     
