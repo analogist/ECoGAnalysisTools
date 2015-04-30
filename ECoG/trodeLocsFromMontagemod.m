@@ -10,7 +10,7 @@ function [ coords ] = trodeLocsFromMontagemod( subject, Montage, useTLRC )
         Montage.MontageTokenized = {'Grid(1:64)'};
     end
     
-    subjDir = [fileparts(subject) '/other'];
+    subjDir = [fileparts(subject)];
     
     if (~useTLRC)
         load([subjDir '\trodes.mat']);
