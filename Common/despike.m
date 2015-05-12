@@ -19,7 +19,7 @@ function [ data_out, outlier_index ] = despike( data_in, rangemultiplier, thresh
 %   top threshold quantile (default 0.995, or 99.5 percentile), and min is
 %   1-threshold (default 0.005, or 0.5 percentile)
 
-    if(~exist('datarange', 'var'))
+    if(~exist('rangemultiplier', 'var'))
         rangemultiplier = 2;
     end
 
