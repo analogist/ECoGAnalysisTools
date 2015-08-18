@@ -1,4 +1,4 @@
-function [ data_out, outlier_index ] = despike( data_in, rangemultiplier, threshold )
+function [ data_out, outlier_index ] = despike( data_in, rangemultiplier, threshold, sequential )
 %DESPIKE Removes spikes by interpolation outside of a range.
 %   [DATA_OUT, OUTLIER_INDEX] = DESPIKE(DATA_IN, RANGEMULTIPLIER, THRESHOLD)
 %   This function removes data spikes. It first identifies all the spikes
@@ -26,6 +26,10 @@ function [ data_out, outlier_index ] = despike( data_in, rangemultiplier, thresh
     if(~exist('threshold', 'var'))
         threshold = 0.995;
     end
+
+    if(~exist('sequential', 'var'))
+        sequential = 3;
+    end
     
     data_out = data_in;
     
@@ -51,8 +55,8 @@ function [ data_out, outlier_index ] = despike( data_in, rangemultiplier, thresh
                                         % end if you have a higher
                                         % tolerance for sequential outliers
         warning('More than 2 continuous outlier samples in a row')
-        if(sum(diff(outlierjumps) == 0) > 1) 
-            error('More than 3 continuous outliers in a row; quitting');
+        if(sum(diff(outlierjumps) == 0) > (sequential-2)) 
+            error(['More than ' num2str(sequential) ' continuous outliers in a row; quitting']);
         end
     end
     
