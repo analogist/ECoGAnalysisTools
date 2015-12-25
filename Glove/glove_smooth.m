@@ -1,6 +1,13 @@
 function [ out_glove ] = glove_smooth( in_glove, fs, minfeaturesize, attenu )
 %GLOVE_SMOOTH Summary of this function goes here
 %   Detailed explanation goes here
+
+% sample parameters used
+% data_filtj = glove_smooth(data_interp, Fs, 0.1, 20);
+% dx1j = diff(glove_smooth(data_filtj, Fs, 0.05, 3));
+% dx2j = diff(glove_smooth(dx1j, Fs, 0.15, 10));
+% dx3j = diff(glove_smooth(dx2j, Fs, 0.15, 10));
+
     v = version;
     if(str2double(v(1:3)) >= 8.3)
         
