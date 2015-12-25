@@ -41,7 +41,6 @@ if(~exist('notchmode', 'var'))
     disp('notchmode not defined, assuming Miah compatibility mode')
         disp('ECoG: Notch filter')
         subj_signal = notch(subj_signal, [60 120 180], 1200, 4);
-    end
 end
 
 end
