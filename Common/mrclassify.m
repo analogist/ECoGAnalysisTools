@@ -16,6 +16,11 @@ function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier)
     switch classifier
         case 'LDA'
             yfit = classify(XTESTprune, XTRAINprune, ytrain);
+        case 'QDA'
+            yfit = classify(XTESTprune, XTRAINprune, ytrain, 'quadratic');
+        case 'MLR'
+            B = mnrfit(XTRAINprune, ytrain);
+            [~, yfit] = max(mnrval(B, XTESTprune));
         otherwise
            error('classifier error') 
     end
