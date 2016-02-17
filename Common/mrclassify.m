@@ -11,11 +11,11 @@ function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier, skipmr
     if(~exist('skipmr', 'var'))
         skipmr = false;
     end
-
+    
     if(skipmr)
         XTRAINprune = XTRAIN;
         XTESTprune = XTEST;
-    else     
+    else
         crit = mrmr_mid_d(XTRAIN, uint8(ytrain), mrparams);
         XTRAINprune = XTRAIN(:, crit);
         XTESTprune = XTEST(:, crit);
@@ -26,11 +26,13 @@ function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier, skipmr
             yfit = classify(XTESTprune, XTRAINprune, ytrain);
         case 'QDA'
             yfit = classify(XTESTprune, XTRAINprune, ytrain, 'quadratic');
+        case 'dLDA'
+            yfit = classify(XTESTprune, XTRAINprune, ytrain, 'diaglinear');
         case 'MLR'
             B = mnrfit(XTRAINprune, ytrain);
             [~, yfit] = max(mnrval(B, XTESTprune));
         otherwise
-           error('classifier error') 
+           error('classifier error')
     end
 end
 
