@@ -1,4 +1,4 @@
-function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier)
+function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier, skipmr)
 %MRCLASSIFY Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -8,10 +8,18 @@ function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier)
     if(~exist('mrparams', 'var'))
         mrparams = 10;
     end
+    if(~exist('skipmr', 'var'))
+        skipmr = false;
+    end
 
-    crit = mrmr_mid_d(XTRAIN, uint8(ytrain), mrparams);
-    XTRAINprune = XTRAIN(:, crit);
-    XTESTprune = XTEST(:, crit);
+    if(skipmr)
+        XTRAINprune = XTRAIN;
+        XTESTprune = XTEST;
+    else     
+        crit = mrmr_mid_d(XTRAIN, uint8(ytrain), mrparams);
+        XTRAINprune = XTRAIN(:, crit);
+        XTESTprune = XTEST(:, crit);
+    end
     
     switch classifier
         case 'LDA'
