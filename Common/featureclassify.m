@@ -1,4 +1,4 @@
-function [yfit] = mrclassify(XTRAIN, ytrain, XTEST, mrparams, classifier, skipmr)
+function [yfit] = featureclassify(XTRAIN, ytrain, XTEST, mrparams, classifier, skipmr)
 %MRCLASSIFY Summary of this function goes here
 %   Detailed explanation goes here
 
