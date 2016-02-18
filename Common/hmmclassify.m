@@ -2,7 +2,7 @@ function [yfit] = hmmclassify(XTRAIN, ytrain, XTEST, hmmstates)
 %MRCLASSIFY Summary of this function goes here
 %   Detailed explanation goes here
 
-    if(~exist('hmmparams', 'var'))
+    if(~exist('hmmstates', 'var'))
         hmmstates = 10;
     end
     
@@ -12,8 +12,9 @@ function [yfit] = hmmclassify(XTRAIN, ytrain, XTEST, hmmstates)
     estTR = cell(numel(classes), 1);
     estE = cell(numel(classes), 1);
     
-    transguess = eye(hmmstates)*0.5 + (ones(hmmstates)-eye(hmmstates))*0.5/(hmmstates-1);
-    emisguess = ones(hmmstates, numemits)/hmmstates;
+%     transguess = eye(hmmstates)*0.5 + (ones(hmmstates)-eye(hmmstates))*0.5/(hmmstates-1);
+    transguess = ones(hmmstates)/hmmstates;
+    emisguess = ones(hmmstates, numemits)/numemits;
     
     for i = 1:numel(classes)
         [estTR{i} estE{i}] = hmmtrain(XTRAIN(ytrain == classes(i), :), transguess, emisguess);
