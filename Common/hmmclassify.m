@@ -1,13 +1,17 @@
-function [yfit] = hmmclassify(XTRAIN, ytrain, XTEST, hmmstates)
+function [yfit] = hmmclassify(XTRAIN, ytrain, XTEST, numemits, hmmstates)
 %MRCLASSIFY Summary of this function goes here
 %   Detailed explanation goes here
 
     if(~exist('hmmstates', 'var'))
         hmmstates = 10;
     end
+    if(~exist('numemits', 'var'))
+        warning('numemits not defined!');
+        numemits = numel(unique(XTRAIN));
+    end
     
     classes = unique(ytrain);
-    numemits = numel(unique(XTRAIN));
+
     classprob = zeros(numel(classes), 1);
     estTR = cell(numel(classes), 1);
     estE = cell(numel(classes), 1);
