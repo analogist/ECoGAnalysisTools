@@ -1,12 +1,27 @@
-function [ powerout, phaseout ] = morletprocess( inputs, fs, time_res, lmptrack )
-%MORLETPROCESS Summary of this function goes here
-%   Detailed explanation goes here
-    %% wavelet
-    dt = 1/1220.7;
-    binby = round(1220.7*0.050);
-    trueend = floor(length(sig)/binby)*binby;
-    % scales = helperCWTTimeFreqVector(1, 150, 2/pi, 1/1220.7, 8);
-    % cwty = cwtft({sig(:, 1), 1/1220.7},'wavelet','morlex','scales',scales,'padmode','symw');
+function [ powerout, phaseangle ] = morletprocess( inputs, fs, time_res, use_lmp )
+%MORLETPROCESS Processing ECoG spectrum using analytic/nonanalytic Morlet
+%wavelets in Matlab cwtft(). Outputs spectral power.
+%   [POWEROUT, PHASEANGLE] = MORLETPROCESS(INPUTS, FS, TIME_RES, USE_LMP)
+%
+%   This function wraps cwtft to get an efficiently spaced Morlet/Morlex
+%   power spectrum estimation with certain time resolution bins.
+%
+%   POWEROUT = MORLETPROCESS(INPUTS, FS, TIME_RES) takes INPUTS as
+%   [time x channels] with time along dim 1. It iterates through all
+%   channels to compute POWEROUT, with sampling frequency FS, and bins by
+%   TIME_RES in seconds.
+%
+%   Example: POWEROUT = MORLETPROCESS(INPUTS, 1200, 0.050) for 1200 Hz
+%   sampling frequency and 50ms bins.
+%
+%   USE_LMP is a bool (true, false). Setting USE_LMP to true will add an
+%   additional "0 Hz" frequency track to all power outputs, to estimate
+%   "local motor potential".
+%
+
+    dt = 1/fs;
+    binby = round(fs*time_res);
+    truncateby = mod(length(inputs), binby)
     scales = helperCWTTimeFreqVector(2, 200, 3/pi, dt, 8);
     cwty = cwtft({sig(:, 1), dt},'wavelet','morlex','scales',scales,'padmode','symw');
     f = cwty.frequencies;
@@ -47,16 +62,6 @@ function [ powerout, phaseout ] = morletprocess( inputs, fs, time_res, lmptrack 
         if(freemem)
             clear siglmp;
         end
-    end
-
-
-    forcebin = zeros(length(t), size(force, 2));
-    for i = 1:size(force, 2)
-        forceprebin = force(1:trueend, i);
-        forcebinning = reshape(forceprebin, binby, size(forceprebin, 1)/binby);
-        forcebinning = squeeze(mean(forcebinning, 1));
-        forcebinning = forcebinning';
-        forcebin(:, i) = forcebinning;
     end
 end
 
