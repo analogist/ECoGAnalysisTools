@@ -1,10 +1,17 @@
-function [ f, t, powerout ] = morletprocess( inputs, fs, time_res, use_lmp )
+function [ powerout, f, t, phaseangle ] = morletprocess( inputs, fs, time_res, use_lmp )
 %MORLETPROCESS Processing ECoG spectrum using analytic/nonanalytic Morlet
 %wavelets in Matlab cwtft(). Outputs spectral power.
-%   [POWEROUT, PHASEANGLE] = MORLETPROCESS(INPUTS, FS, TIME_RES, USE_LMP)
+%   [POWEROUT, F, T, PHASEANGLE] = MORLETPROCESS(INPUTS, FS, TIME_RES, USE_LMP)
 %
 %   This function wraps cwtft to get an efficiently spaced Morlet/Morlex
 %   power spectrum estimation with certain time resolution bins.
+%
+%   F (frequency) and T (time) bin labels are provided in the output.
+%
+%   Using this function to compute phase is not necessarily recommended
+%   as Hilbert phases are generally considered more stable for broadband
+%   behavior, but can be used if needed. cwtft 'morlex' (non-analytic) is
+%   used if phase is not required, otherwise 'morl' is used.
 %
 %   POWEROUT = MORLETPROCESS(INPUTS, FS, TIME_RES) takes INPUTS as
 %   [time x channels] with time along dim 1. It iterates through all
@@ -20,27 +27,38 @@ function [ f, t, powerout ] = morletprocess( inputs, fs, time_res, use_lmp )
 %
 
     if(~exist('use_lmp', 'var'))
-        use_lmp = false;
+        use_lmp = false; % do not add LMP "0 Hz" track by default
+    end
+    
+    if(nargout == 4)
+        use_wavelet = 'morl'; % only if phase angle is required
+    else
+        use_wavelet = 'morlex'; % non-analytic, runs faster
     end
     
     % initialize dt and bins
     dt = 1/fs;
     binsize = round(fs*time_res);
-    truncateby = mod(length(inputs), binsize);
+    truncateby = mod(length(inputs), binsize); % make round bins
     
     % establish scales, frequencies, and time
     scales = helperCWTTimeFreqVector(2, 200, 3/pi, dt, 8);
     f = (3/pi)./scales;
     t = (binsize*dt/2):(binsize*dt):((length(inputs)-truncateby)*dt);
 
+    % initialize power, phase, and lmp tracks, if any
     powerout = zeros(length(f), length(t), size(inputs, 2));
+    if(nargout == 4)
+        phaseangle = zeros(size(powerout));
+    end
     if(use_lmp)
         siglmp = zeros(1, length(t), size(inputs, 2));
     end
     
     for i = 1:size(inputs, 2)
-        cwty = cwtft({inputs(:, i), dt},'wavelet','morlex','scales',scales,'padmode','symw');
-        powerout(:, :, i) = truncbindata(abs(cwty.cfs), truncateby, binsize);
+        cwty = cwtft({inputs(:, i), dt},'wavelet',use_wavelet,'scales',scales,'padmode','symw');
+        powerout(:, :, i) = truncbindata(abs(cwty.cfs).^2, truncateby, binsize);
+        phaseangle(:, :, i) = truncbindata(angle(cwty.cfs), truncateby, binsize);
 
         if(use_lmp)
             lmpprebin = glove_smooth(inputs(:, i), 1220.7, 1, 3);
@@ -48,7 +66,7 @@ function [ f, t, powerout ] = morletprocess( inputs, fs, time_res, use_lmp )
         end
     end
 
-    if(use_lmp)
+    if(use_lmp) % stick LMP on to the end of power, as a "0 Hz" track
         powerout = cat(1,powerout, siglmp);
         f(end+1) = 0;
     end
