@@ -61,7 +61,7 @@ function [ powerout, f, t, phaseangle ] = morletprocess( inputs, fs, time_res, u
         phaseangle(:, :, i) = truncbindata(angle(cwty.cfs), truncateby, binsize);
 
         if(use_lmp)
-            lmpprebin = glove_smooth(inputs(:, i), 1220.7, 1, 3);
+            lmpprebin = computeLMP(inputs(:, i), fs);
             siglmp(:, :, i) = truncbindata(lmpprebin, truncateby, binsize);
         end
     end
@@ -99,3 +99,40 @@ function [ postbin ] = truncbindata( prebin, truncateby, binsize, forcedim )
     postbin = binningtemp';
 end
 
+function [ out_smooth ] = computeLMP( in_smooth, fs )
+% Uses specifically designed lowpass to obtain LMP. This obtains the
+% frequency response of moving average windows of ~133ms (Schalk 2007)
+% using a low-order zero-phase Butterworth filter to achieve minimum phase
+% lags and smooth frequency response characteristics.
+
+    v = version;
+    if(str2double(v(1:3)) >= 8.3)
+        
+    out_smooth = zeros(size(in_smooth));
+    
+    % MATLAB 2014a and after
+        d = designfilt('lowpassiir', 'PassbandFrequency', 0.2, ...
+                                    'StopbandFrequency', 1/2, ...
+                                    'PassbandRipple', 1, ...
+                                    'StopbandAttenuation', 3, ...
+                                    'SampleRate', fs, ...
+                                    'DesignMethod', 'butter');
+
+        for i = 1:size(in_smooth, 2)
+            out_smooth(:, i) = filtfilt(d, in_smooth(:, i));
+        end
+        
+    else
+
+    % MATLAB 2013b and before
+        
+        h  = fdesign.lowpass(0.2, 1/2, 1, 3, fs);
+        Hd = design(h, 'butter', 'MatchExactly', 'stopband');
+        [b, a] = sos2tf(Hd.sosMatrix, Hd.ScaleValues);
+
+        for i = 1:size(in_smooth, 2)
+            out_smooth(:, i) = filtfilt(b, a, in_smooth(:, i));
+        end
+        
+    end
+end
