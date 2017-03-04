@@ -42,8 +42,19 @@ function [ powerout, f, t, phaseangle ] = morletprocess( inputs, fs, time_res, u
     truncateby = mod(length(inputs), binsize); % make round bins
     
     % establish scales, frequencies, and time
-    scales = helperCWTTimeFreqVector(2, 200, 3/pi, dt, 8);
-    f = (3/pi)./scales;
+    numvoices = 4;
+    a0 = 2^(1/numvoices);
+    f0 = 3/pi;
+    minfreq = 2;
+    maxfreq = 200;
+
+    minscale = f0/(maxfreq/fs);
+    maxscale = f0/(minfreq/fs);
+    minscale = floor(numvoices*log2(minscale));
+    maxscale = ceil(numvoices*log2(maxscale));
+    scales = a0.^(minscale:maxscale)./fs;
+
+    f = f0./scales;
     t = (binsize*dt/2):(binsize*dt):((length(inputs)-truncateby)*dt);
 
     % initialize power, phase, and lmp tracks, if any
