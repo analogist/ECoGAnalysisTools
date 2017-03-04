@@ -24,6 +24,8 @@ function [ ] = PlotDotsmod( id, surfpath, trodeLocations, weights, holddots, vie
 
     if (~exist('colormapName','var') || isempty(colormapName))
         load('loc_colormap');
+    elseif strcmp(colormapName,'parula')
+        cm = colormap(parula);
     elseif (~isBuiltinColormap(colormapName))
         load(colormapName);
     else

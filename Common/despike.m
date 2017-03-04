@@ -79,7 +79,7 @@ function [ data_out, outlier_index ] = despike( data_in, rangemultiplier, thresh
                 % replace the outlier samples with linear interpolation
     end
     
-    fprintf('Despike: replaced %d outliers in %d outlier blocks.\n', length(outlier_index), length(startpoint));
+%     fprintf('Despike: replaced %d outliers in %d outlier blocks.\n', length(outlier_index), length(startpoint));
 
 end
 
